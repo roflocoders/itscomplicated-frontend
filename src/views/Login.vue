@@ -56,7 +56,7 @@ const handleLogin = async () => {
 
   // Имитация авторизации
   setTimeout(() => {
-    authStore.login(
+    authStore.updateUserData(
       {
         id: 1,
         name: "Иван Иванов",
