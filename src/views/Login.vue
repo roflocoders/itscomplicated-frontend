@@ -30,16 +30,10 @@
   </div>
 </template>
 
-<style>
-.login-container {
-  max-width: 400px;
-  margin: 50px auto;
-}
-</style>
-
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 import { useAuthStore } from "../stores/auth";
 
 const authStore = useAuthStore();
@@ -53,22 +47,29 @@ const form = ref({
 
 const handleLogin = async () => {
   loading.value = true;
+  try {
+    const params = new URLSearchParams();
+    params.append("username", form.value.email);
+    params.append("password", form.value.password);
 
-  // Имитация авторизации
-  setTimeout(() => {
-    authStore.updateUserData(
-      {
-        id: 1,
-        name: "Иван Иванов",
-        email: form.value.email,
-        avatar:
-          "https://avatars.mds.yandex.net/i?id=434f653e3450f644f16f7982c997a7dcac60a3ec-5561596-images-thumbs&n=13",
+    await authStore.login(params, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      "fake-jwt-token"
-    );
-
+    });
     router.push("/");
+    location.reload();
+  } catch (error) {
+    console.error("Ошибка входа:", error);
+  } finally {
     loading.value = false;
-  }, 1000);
+  }
 };
 </script>
+
+<style>
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+}
+</style>
