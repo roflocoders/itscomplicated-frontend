@@ -142,7 +142,7 @@ const handleRegister = async () => {
   // Имитация регистрации
   setTimeout(() => {
     // В реальном приложении здесь был бы API запрос
-    authStore.login(
+    authStore.updateUserData(
       {
         id: Date.now(), // Генерируем уникальный ID
         name: form.value.name,
