@@ -36,7 +36,7 @@
         style="width: 90vw; max-width: 600px"
         title="Создать пост"
         :bordered="false"
-        size="huge"
+        size="small"
         role="dialog"
         aria-modal="true"
       >
@@ -152,7 +152,7 @@
 }
 
 .create-post-form {
-  padding: 0 4px;
+  padding: 0 16px;
 }
 
 .post-textarea :deep(textarea) {

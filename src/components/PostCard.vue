@@ -39,7 +39,7 @@
     <div class="post-stats">
       <n-space align="center" justify="space-between">
         <n-space align="center">
-          <n-space align="center" class="stat-item">
+          <n-space align="center" @click="handleLike" class="stat-item">
             <n-icon size="16" :color="post.isLiked ? '#ff4757' : '#666'">
               <HeartIcon :fill="post.isLiked ? '#ff4757' : 'none'" />
             </n-icon>
@@ -57,35 +57,6 @@
           </n-space>
         </n-space>
       </n-space>
-    </div>
-
-    <div class="post-actions">
-      <n-button
-        text
-        class="action-button"
-        :class="{ liked: post.isLiked }"
-        @click="handleLike"
-      >
-        <template #icon>
-          <n-icon>
-            <HeartIcon :fill="post.isLiked ? '#ff4757' : 'none'" />
-          </n-icon>
-        </template>
-        {{ post.isLiked ? "Понравилось" : "Нравится" }}
-      </n-button>
-
-      <n-button
-        text
-        class="action-button"
-        @click="showComments = !showComments"
-      >
-        <template #icon>
-          <n-icon>
-            <ChatbubbleOutlineIcon />
-          </n-icon>
-        </template>
-        Комментировать
-      </n-button>
     </div>
 
     <div v-if="showComments" class="comments-section">
@@ -112,8 +83,9 @@
           </div>
         </div>
       </div>
-
-      <div class="add-comment">
+    </div>
+    
+    <div class="add-comment">
         <n-input
           v-model:value="newComment"
           placeholder="Напишите комментарий..."
@@ -134,7 +106,6 @@
           </template>
         </n-input>
       </div>
-    </div>
 
     <n-modal v-model:show="showImagePreview">
       <n-card style="width: 90vw; max-width: 800px">
@@ -199,6 +170,7 @@ const addComment = () => {
       avatar: props.post.user?.avatar,
     });
     newComment.value = "";
+    showComments.value = true;
   }
 };
 </script>

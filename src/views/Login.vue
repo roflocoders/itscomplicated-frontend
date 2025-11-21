@@ -66,9 +66,16 @@ const handleLogin = async () => {
 };
 </script>
 
-<style>
+<style scoped>
 .login-container {
   max-width: 400px;
   margin: 50px auto;
+  padding: 20px;
+}
+
+.login-container :deep(.n-card) {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
 }
 </style>

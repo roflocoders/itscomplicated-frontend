@@ -34,10 +34,17 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 .profile-container {
   max-width: 600px;
   margin: 0 auto;
+  padding: 20px;
+}
+
+.profile-container :deep(.n-card) {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
 }
 </style>
 
