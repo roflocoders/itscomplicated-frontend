@@ -84,28 +84,28 @@
         </div>
       </div>
     </div>
-    
+
     <div class="add-comment">
-        <n-input
-          v-model:value="newComment"
-          placeholder="Напишите комментарий..."
-          round
-          @keyup.enter="addComment"
-        >
-          <template #suffix>
-            <n-button
-              text
-              :disabled="!newComment.trim()"
-              @click="addComment"
-              class="send-button"
-            >
-              <n-icon size="18">
-                <SendIcon />
-              </n-icon>
-            </n-button>
-          </template>
-        </n-input>
-      </div>
+      <n-input
+        v-model:value="newComment"
+        placeholder="Напишите комментарий..."
+        round
+        @keyup.enter="addComment"
+      >
+        <template #suffix>
+          <n-button
+            text
+            :disabled="!newComment.trim()"
+            @click="addComment"
+            class="send-button"
+          >
+            <n-icon size="18">
+              <SendIcon />
+            </n-icon>
+          </n-button>
+        </template>
+      </n-input>
+    </div>
 
     <n-modal v-model:show="showImagePreview">
       <n-card style="width: 90vw; max-width: 800px">
@@ -148,13 +148,9 @@ const formatTime = (timestamp) => {
 };
 
 const handleLike = () => {
-  if (props.post.isLiked) {
-    props.post.likes--;
-    props.post.isLiked = false;
-  } else {
-    props.post.likes++;
-    props.post.isLiked = true;
-  }
+  if (props.post.isLiked) props.post.likes--;
+  else props.post.likes++;
+  props.post.isLiked = !props.post.isLiked;
 };
 
 const addComment = () => {
