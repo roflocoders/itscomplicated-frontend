@@ -128,7 +128,7 @@ const handleLogout = () => {
   margin-right: 8px;
 }
 
-.header-left{
+.header-left {
   flex-flow: row nowrap !important;
 }
 
@@ -151,7 +151,6 @@ const handleLogout = () => {
 .nav-button:hover {
   color: white !important;
   background: rgba(255, 255, 255, 0.1) !important;
-  transform: translateY(-1px);
 }
 
 .nav-button.active {
