@@ -104,36 +104,75 @@ const formErrors = ref({
   confirmPassword: "",
 });
 
+const validators = {
+  name: (value) => {
+    if (!value.trim()) return "Имя обязательно для заполнения";
+    if (value.trim().length < 3)
+      return "Имя должно содержать хотя бы 3 символа";
+    if (value.trim().length > 30)
+      return "Имя не должно быть длиннее 30 символов";
+    if (!/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/.test(value))
+      return "Имя должно содержать только буквы, пробелы и дефисы";
+    return "";
+  },
+
+  email: (value) => {
+    if (!value.trim()) return "Email обязателен для заполнения";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) return "Введите корректный email адрес";
+    if (value.length > 50) return "Email не должен быть длиннее 50 символов";
+    return "";
+  },
+
+  password: (value) => {
+    if (!value) return "Пароль обязателен для заполнения";
+    if (value.length < 8) return "Пароль должен содержать хотя бы 8 символов";
+    if (value.length > 100) return "Пароль не должен быть длиннее 100 символов";
+    if (!/(?=.*[a-z])(?=.*[A-Z])/.test(value))
+      return "Пароль должен содержать заглавные и строчные буквы";
+    if (!/(?=.*\d)/.test(value))
+      return "Пароль должен содержать хотя бы одну цифру";
+    if (!/(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])/.test(value))
+      return "Пароль должен содержать хотя бы один специальный символ";
+    return "";
+  },
+
+  confirmPassword: (value, password) => {
+    if (!value) return "Подтверждение пароля обязательно";
+    if (value !== password) return "Пароли не совпадают";
+    return "";
+  },
+};
+
 const validateForm = () => {
   let isValid = true;
   formErrors.value = { name: "", email: "", password: "", confirmPassword: "" };
 
-  if (!form.value.name.trim()) {
-    formErrors.value.name = "Имя обязательно для заполнения";
+  // Валидируем каждое поле
+  const nameError = validators.name(form.value.name);
+  if (nameError) {
+    formErrors.value.name = nameError;
     isValid = false;
   }
 
-  if (!form.value.email.trim()) {
-    formErrors.value.email = "Email обязателен для заполнения";
-    isValid = false;
-  } else if (!/\S+@\S+\.\S+/.test(form.value.email)) {
-    formErrors.value.email = "Введите корректный email";
+  const emailError = validators.email(form.value.email);
+  if (emailError) {
+    formErrors.value.email = emailError;
     isValid = false;
   }
 
-  if (!form.value.password) {
-    formErrors.value.password = "Пароль обязателен для заполнения";
-    isValid = false;
-  } else if (form.value.password.length < 6) {
-    formErrors.value.password = "Пароль должен содержать минимум 6 символов";
+  const passwordError = validators.password(form.value.password);
+  if (passwordError) {
+    formErrors.value.password = passwordError;
     isValid = false;
   }
 
-  if (!form.value.confirmPassword) {
-    formErrors.value.confirmPassword = "Подтверждение пароля обязательно";
-    isValid = false;
-  } else if (form.value.password !== form.value.confirmPassword) {
-    formErrors.value.confirmPassword = "Пароли не совпадают";
+  const confirmError = validators.confirmPassword(
+    form.value.confirmPassword,
+    form.value.password
+  );
+  if (confirmError) {
+    formErrors.value.confirmPassword = confirmError;
     isValid = false;
   }
 
