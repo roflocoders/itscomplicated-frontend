@@ -1,105 +1,200 @@
 <template>
   <div class="feed-container">
-    <n-card title="Создать пост">
-      <n-form>
-        <n-form-item label="Текст поста">
-          <n-input
-            v-model:value="newPost.content"
-            type="textarea"
-            placeholder="Что у вас нового?"
-            :rows="3"
-          />
-        </n-form-item>
+    <n-card class="create-post-card" :content-style="{ padding: 0 }">
+      <div class="create-post-header">
+        <n-avatar
+          round
+          size="medium"
+          :src="authStore.user?.avatar"
+          class="user-avatar"
+        />
+        <n-button
+          text
+          class="create-post-trigger"
+          @click="showCreatePost = true"
+        >
+          Что у вас нового, {{ authStore.user?.name.split(" ")[0] }}?
+        </n-button>
+      </div>
+    </n-card>
 
-        <n-form-item label="Изображение">
-          <n-space vertical>
-            <!-- Поле для URL изображения -->
+    <div class="posts-grid">
+      <PostCard
+        v-for="post in posts"
+        :key="post.id"
+        :post="post"
+        class="post-item"
+      />
+    </div>
+
+    <n-modal
+      v-model:show="showCreatePost"
+      :mask-closable="false"
+      class="create-post-modal"
+    >
+      <n-card
+        style="width: 90vw; max-width: 600px"
+        title="Создать пост"
+        :bordered="false"
+        size="huge"
+        role="dialog"
+        aria-modal="true"
+      >
+        <template #header-extra>
+          <n-button text @click="showCreatePost = false">
+            <n-icon size="20">
+              <CloseIcon />
+            </n-icon>
+          </n-button>
+        </template>
+
+        <n-form class="create-post-form">
+          <n-form-item>
+            <n-input
+              v-model:value="newPost.content"
+              type="textarea"
+              placeholder="Поделитесь своими мыслями..."
+              :rows="4"
+              :autosize="{ minRows: 4, maxRows: 8 }"
+              class="post-textarea"
+            />
+          </n-form-item>
+
+          <n-form-item label="Добавить изображение">
             <n-input
               v-model:value="newPost.image"
               placeholder="https://example.com/image.jpg"
-              style="margin-bottom: 10px"
+              round
             />
+          </n-form-item>
 
-            <!-- Кнопка для загрузки с компьютера -->
-            <n-upload
-              accept="image/*"
-              :show-file-list="false"
-              :custom-request="handleImageUpload"
+          <div v-if="newPost.image" class="image-preview">
+            <img :src="newPost.image" alt="Preview" class="preview-image" />
+            <n-button text class="remove-image" @click="newPost.image = ''">
+              <n-icon size="16">
+                <CloseIcon />
+              </n-icon>
+            </n-button>
+          </div>
+        </n-form>
+
+        <template #footer>
+          <n-space justify="end">
+            <n-button @click="showCreatePost = false"> Отмена </n-button>
+            <n-button
+              type="primary"
+              @click="createPost"
+              :disabled="!newPost.content.trim()"
+              :loading="posting"
             >
-              <n-button>
-                <template #icon>
-                  <n-icon>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="16"
-                      height="16"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M18 15v3H6v-3H4v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3h-2zM7 9l1.41 1.41L11 7.83V16h2V7.83l2.59 2.58L17 9l-5-5-5 5z"
-                      />
-                    </svg>
-                  </n-icon>
-                </template>
-                Загрузить с компьютера
-              </n-button>
-            </n-upload>
-
-            <!-- Предпросмотр загруженного изображения -->
-            <div v-if="uploadedImagePreview" class="image-preview">
-              <img
-                :src="uploadedImagePreview"
-                alt="Preview"
-                class="preview-image"
-              />
-              <n-button
-                size="small"
-                @click="removeUploadedImage"
-                type="error"
-                text
-                style="margin-top: 8px"
-              >
-                Удалить
-              </n-button>
-            </div>
+              Опубликовать
+            </n-button>
           </n-space>
-        </n-form-item>
-
-        <n-button
-          type="primary"
-          @click="createPost"
-          :disabled="!newPost.content.trim()"
-        >
-          Опубликовать
-        </n-button>
-      </n-form>
-    </n-card>
-
-    <PostCard v-for="post in posts" :key="post.id" :post="post" />
+        </template>
+      </n-card>
+    </n-modal>
   </div>
 </template>
 
 <style scoped>
 .feed-container {
-  max-width: 800px;
-  margin: auto;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.n-card {
-  margin-block: 1em;
+.create-post-card {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+.create-post-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  flex-shrink: 0;
+}
+
+.create-post-trigger {
+  flex: 1;
+  justify-content: flex-start;
+  background: #f8f9fa;
+  border-radius: 24px;
+  padding: 12px 20px;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.create-post-trigger:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.posts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.post-item {
+  transition: all 0.3s ease;
+}
+
+.create-post-modal :deep(.n-card__content) {
+  padding: 0;
+}
+
+.create-post-form {
+  padding: 0 4px;
+}
+
+.post-textarea :deep(textarea) {
+  font-size: 16px;
+  line-height: 1.5;
+  border: none;
+  resize: none;
+  box-shadow: none !important;
+}
+
+.post-textarea :deep(textarea):focus {
+  border: none;
+  box-shadow: none !important;
 }
 
 .image-preview {
-  margin-top: 10px;
-  text-align: center;
+  position: relative;
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .preview-image {
-  max-width: 200px;
-  max-height: 200px;
-  border-radius: 8px;
-  border: 1px solid #d9d9d9;
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.remove-image {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+}
+
+.remove-image:hover {
+  background: rgba(0, 0, 0, 0.9);
 }
 </style>
 
@@ -107,33 +202,78 @@
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "../stores/auth";
 import PostCard from "../components/PostCard.vue";
-import { useMessage } from "naive-ui";
+import { CloseOutline as CloseIcon } from "@vicons/ionicons5";
 
 const authStore = useAuthStore();
-const message = useMessage();
 const posts = ref([]);
 const newPost = ref({
   content: "",
   image: "",
 });
-const uploadedImagePreview = ref("");
+const showCreatePost = ref(false);
+const posting = ref(false);
 
-// Моковые данные для демонстрации
+// Обновленные моковые данные с временными метками
 const mockPosts = [
   {
     id: 1,
     author: "Иван Иванов",
-    content: "Сегодня прекрасный день для программирования! 🚀",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan",
+    content:
+      "Сегодня прекрасный день для программирования! 🚀 Только что закончил новый фича на Vue 3. Что думаете о Composition API?",
     likes: 15,
-    comments: [{ id: 1, author: "Петр", text: "Полностью согласен!" }],
+    isLiked: false,
+    timestamp: Date.now() - 3600000, // 1 час назад
+    comments: [
+      {
+        id: 1,
+        author: "Петр",
+        text: "Полностью согласен! Composition API - это game changer!",
+        timestamp: Date.now() - 1800000,
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Peter",
+      },
+    ],
   },
   {
     id: 2,
     author: "Мария Петрова",
-    content: "Только что закончила новый проект на Vue 3!",
-    image: "https://picsum.photos/400/200",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
+    content:
+      "Только что закончила новый проект на Vue 3! Использовала Naive UI - потрясающая библиотека компонентов!",
+    image:
+      "https://png.pngtree.com/thumb_back/fh260/background/20230610/pngtree-picture-of-a-blue-bird-on-a-black-background-image_2937385.jpg",
     likes: 23,
+    isLiked: true,
+    timestamp: Date.now() - 7200000, // 2 часа назад
     comments: [],
+  },
+  {
+    id: 3,
+    author: "Алексей Смирнов",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alexey",
+    content:
+      "Ребята, посмотрите на этот закат! 🌅 Иногда нужно отвлекаться от кода и наслаждаться природой.",
+    image:
+      "https://zastavki.gas-kvas.com/uploads/posts/2024-05/thumbs/zastavki-gas-kvas-com-ihrv-p-zastavki-smeshnie-na-avu-7.jpg",
+    likes: 42,
+    isLiked: false,
+    timestamp: Date.now() - 86400000, // 1 день назад
+    comments: [
+      {
+        id: 2,
+        author: "Мария",
+        text: "Как красиво! Где это снято?",
+        timestamp: Date.now() - 43200000,
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
+      },
+      {
+        id: 3,
+        author: "Алексей",
+        text: "Это в Крыму, недалеко от Ялты!",
+        timestamp: Date.now() - 36000000,
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alexey",
+      },
+    ],
   },
 ];
 
@@ -141,63 +281,29 @@ onMounted(() => {
   posts.value = mockPosts;
 });
 
-// Обработка загрузки изображения
-const handleImageUpload = ({ file }) => {
-  const validImageTypes = [
-    "image/jpeg",
-    "image/jpg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-  ];
-
-  if (!validImageTypes.includes(file.file?.type)) {
-    message.error(
-      "Пожалуйста, выберите файл изображения (JPEG, PNG, GIF, WebP)"
-    );
-    return;
-  }
-
-  if (file.file && file.file.size > 5 * 1024 * 1024) {
-    // 5MB limit
-    message.error("Размер файла не должен превышать 5MB");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    uploadedImagePreview.value = e.target.result;
-    newPost.value.image = e.target.result; // Используем Data URL для предпросмотра
-  };
-  reader.readAsDataURL(file.file);
-};
-
-// Удаление загруженного изображения
-const removeUploadedImage = () => {
-  uploadedImagePreview.value = "";
-  newPost.value.image = "";
-};
-
-// Создание поста
 const createPost = () => {
   if (newPost.value.content.trim()) {
-    const post = {
-      id: Date.now(),
-      author: authStore.user?.name || "Аноним",
-      content: newPost.value.content,
-      image: newPost.value.image,
-      likes: 0,
-      comments: [],
-    };
+    posting.value = true;
 
-    posts.value.unshift(post);
-    newPost.value.content = "";
-    newPost.value.image = "";
-    uploadedImagePreview.value = "";
+    setTimeout(() => {
+      const post = {
+        id: Date.now(),
+        author: authStore.user?.name || "Аноним",
+        avatar: authStore.user?.avatar,
+        content: newPost.value.content,
+        image: newPost.value.image,
+        likes: 0,
+        isLiked: false,
+        timestamp: new Date(),
+        comments: [],
+      };
 
-    message.success("Пост успешно опубликован!");
-  } else {
-    message.warning("Введите текст поста");
+      posts.value.unshift(post);
+      newPost.value.content = "";
+      newPost.value.image = "";
+      showCreatePost.value = false;
+      posting.value = false;
+    }, 800);
   }
 };
 </script>

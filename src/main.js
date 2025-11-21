@@ -15,6 +15,8 @@ import {
   // General
   NButton,
   NAvatar,
+  NIcon,
+  NGradientText,
 
   // Data Display
   NCard,
@@ -26,12 +28,14 @@ import {
   NInput,
   NForm,
   NFormItem,
-  NUpload, // Добавлено
 
   // Feedback
   NModal,
   NSpin,
-  NIcon, // Добавлено
+  NDivider,
+
+  // Navigation
+  NDropdown,
 } from "naive-ui";
 
 const app = createApp(App);
@@ -45,6 +49,8 @@ const naiveComponents = {
   NLayoutContent,
   NButton,
   NAvatar,
+  NIcon,
+  NGradientText,
   NCard,
   NSpace,
   NGrid,
@@ -52,10 +58,10 @@ const naiveComponents = {
   NInput,
   NForm,
   NFormItem,
-  NUpload, // Добавлено
   NModal,
   NSpin,
-  NIcon, // Добавлено
+  NDivider,
+  NDropdown,
 };
 
 Object.entries(naiveComponents).forEach(([name, component]) => {
