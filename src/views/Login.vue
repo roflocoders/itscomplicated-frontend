@@ -61,7 +61,8 @@ const handleLogin = async () => {
         id: 1,
         name: "Иван Иванов",
         email: form.value.email,
-        avatar: "https://picsum.photos/40",
+        avatar:
+          "https://avatars.mds.yandex.net/i?id=434f653e3450f644f16f7982c997a7dcac60a3ec-5561596-images-thumbs&n=13",
       },
       "fake-jwt-token"
     );

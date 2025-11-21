@@ -147,7 +147,7 @@ const handleRegister = async () => {
         id: Date.now(), // Генерируем уникальный ID
         name: form.value.name,
         email: form.value.email,
-        avatar: `https://picsum.photos/40?random=${Date.now()}`,
+        avatar: `"https://avatars.mds.yandex.net/i?id=434f653e3450f644f16f7982c997a7dcac60a3ec-5561596-images-thumbs&n=13"`,
       },
       "fake-jwt-token-" + Date.now()
     );
