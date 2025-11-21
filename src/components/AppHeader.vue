@@ -48,7 +48,7 @@
               :src="authStore.user?.avatar"
               class="user-avatar"
             />
-            <span class="user-name">{{ authStore.user?.username }}</span>
+            <span class="user-name">{{ authStore.user?.full_name || authStore.user?.username }}</span>
             <n-icon size="16" class="dropdown-arrow">
               <ChevronDownIcon />
             </n-icon>
@@ -240,7 +240,6 @@ const handleLogout = () => {
 .n-dropdown-menu {
   padding: 8px !important;
   border-radius: 8px;
-  width: 139px;
 }
 
 .n-dropdown-option-body__prefix {
