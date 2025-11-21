@@ -2,8 +2,8 @@
   <div class="login-container">
     <n-card title="Вход в SocialNet">
       <n-form>
-        <n-form-item label="Email">
-          <n-input v-model:value="form.email" placeholder="Введите email" />
+        <n-form-item label="Имя пользователя">
+          <n-input v-model:value="form.username" placeholder="Введите имя пользователя" />
         </n-form-item>
         <n-form-item label="Пароль">
           <n-input
@@ -41,7 +41,7 @@ const router = useRouter();
 
 const loading = ref(false);
 const form = ref({
-  email: "",
+  username: "",
   password: "",
 });
 
@@ -49,7 +49,7 @@ const handleLogin = async () => {
   loading.value = true;
   try {
     const params = new URLSearchParams();
-    params.append("username", form.value.email);
+    params.append("username", form.value.username);
     params.append("password", form.value.password);
 
     await authStore.login(params, {
