@@ -12,7 +12,20 @@
     <p>{{ post.content }}</p>
 
     <n-space v-if="post.image" justify="center">
-      <img :src="post.image" style="max-width: 100%; border-radius: 8px" />
+      <img
+        :src="post.image"
+        style="
+          max-width: 100%;
+          max-height: 400px;
+          border-radius: 8px;
+          object-fit: contain;
+        "
+        @load="imageLoaded = true"
+      />
+      <n-spin
+        v-if="!imageLoaded && post.image.startsWith('data:image')"
+        size="small"
+      />
     </n-space>
 
     <template #footer v-if="showComments">
@@ -40,6 +53,7 @@ const props = defineProps({
 
 const showComments = ref(false);
 const newComment = ref("");
+const imageLoaded = ref(false);
 
 const handleLike = () => {
   props.post.likes++;

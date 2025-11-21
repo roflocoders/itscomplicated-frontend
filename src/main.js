@@ -26,10 +26,12 @@ import {
   NInput,
   NForm,
   NFormItem,
+  NUpload, // Добавлено
 
   // Feedback
   NModal,
   NSpin,
+  NIcon, // Добавлено
 } from "naive-ui";
 
 const app = createApp(App);
@@ -50,8 +52,10 @@ const naiveComponents = {
   NInput,
   NForm,
   NFormItem,
+  NUpload, // Добавлено
   NModal,
   NSpin,
+  NIcon, // Добавлено
 };
 
 Object.entries(naiveComponents).forEach(([name, component]) => {
