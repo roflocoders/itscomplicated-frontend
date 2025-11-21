@@ -1,5 +1,5 @@
 <template>
-  <n-card :title="post.author" style="margin-bottom: 20px">
+  <n-card :title="post.author">
     <template #header-extra>
       <n-space>
         <n-button text @click="handleLike"> ❤️ {{ post.likes }} </n-button>

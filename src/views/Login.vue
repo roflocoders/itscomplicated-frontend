@@ -1,5 +1,5 @@
 <template>
-  <div style="max-width: 400px; margin: 100px auto">
+  <div class="login-container">
     <n-card title="Вход в SocialNet">
       <n-form>
         <n-form-item label="Email">
@@ -20,6 +20,13 @@
     </n-card>
   </div>
 </template>
+
+<style>
+.login-container {
+  max-width: 400px;
+  margin: 100px auto;
+}
+</style>
 
 <script setup>
 import { ref } from "vue";

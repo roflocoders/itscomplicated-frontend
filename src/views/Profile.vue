@@ -1,5 +1,5 @@
 <template>
-  <div style="max-width: 600px; margin: 0 auto">
+  <div class="profile-container">
     <n-card title="Мой профиль">
       <n-space vertical>
         <n-space align="center">
@@ -32,6 +32,13 @@
     </n-card>
   </div>
 </template>
+
+<style>
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+</style>
 
 <script setup>
 import { useAuthStore } from "../stores/auth";
