@@ -13,7 +13,8 @@
           class="create-post-trigger"
           @click="showCreatePost = true"
         >
-          Что у вас нового, {{ authStore.user?.full_name || authStore.user?.username }}?
+          Что у вас нового,
+          {{ authStore.user?.full_name || authStore.user?.username }}?
         </n-button>
       </div>
     </n-card>
@@ -203,6 +204,7 @@ import { ref, onMounted } from "vue";
 import { useAuthStore } from "../stores/auth";
 import PostCard from "../components/PostCard.vue";
 import { CloseOutline as CloseIcon } from "@vicons/ionicons5";
+import { generateId } from "../utils/idGenerator";
 
 const authStore = useAuthStore();
 const posts = ref([]);
@@ -216,7 +218,7 @@ const posting = ref(false);
 // Обновленные моковые данные с временными метками
 const mockPosts = [
   {
-    id: 1,
+    id: generateId(),
     author: "Иван Иванов",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan",
     content:
@@ -226,7 +228,7 @@ const mockPosts = [
     timestamp: Date.now() - 3600000, // 1 час назад
     comments: [
       {
-        id: 1,
+        id: generateId(),
         author: "Петр",
         text: "Полностью согласен! Composition API - это game changer!",
         timestamp: Date.now() - 1800000,
@@ -235,7 +237,7 @@ const mockPosts = [
     ],
   },
   {
-    id: 2,
+    id: generateId(),
     author: "Мария Петрова",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
     content:
@@ -248,7 +250,7 @@ const mockPosts = [
     comments: [],
   },
   {
-    id: 3,
+    id: generateId(),
     author: "Алексей Смирнов",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alexey",
     content:
@@ -260,14 +262,14 @@ const mockPosts = [
     timestamp: Date.now() - 86400000, // 1 день назад
     comments: [
       {
-        id: 2,
+        id: generateId(),
         author: "Мария",
         text: "Как красиво! Где это снято?",
         timestamp: Date.now() - 43200000,
         avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
       },
       {
-        id: 3,
+        id: generateId(),
         author: "Алексей",
         text: "Это в Крыму, недалеко от Ялты!",
         timestamp: Date.now() - 36000000,
@@ -287,7 +289,7 @@ const createPost = () => {
 
     setTimeout(() => {
       const post = {
-        id: Date.now(),
+        id: generateId(),
         author: authStore.user?.name || "Аноним",
         avatar: authStore.user?.avatar,
         content: newPost.value.content,

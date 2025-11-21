@@ -123,6 +123,7 @@ import {
   SendOutline as SendIcon,
   EllipsisHorizontalOutline as EllipsisHorizontalIcon,
 } from "@vicons/ionicons5";
+import { generateId } from "../utils/idGenerator";
 
 const props = defineProps({
   post: {
@@ -169,17 +170,6 @@ const addComment = () => {
     showComments.value = true;
   }
 };
-
-function generateId() {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-
-  // Fallback для старых браузеров
-  const time = Date.now().toString(36);
-  const random = Math.random().toString(36).substr(2, 9);
-  return `${time}_${random}`;
-}
 </script>
 
 <style scoped>

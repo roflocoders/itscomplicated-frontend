@@ -84,6 +84,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
+import { generateId } from "../utils/idGenerator";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -151,7 +152,7 @@ const handleRegister = async () => {
     // В реальном приложении здесь был бы API запрос
     authStore.updateUserData(
       {
-        id: Date.now(), // Генерируем уникальный ID
+        id: generateId(),
         name: form.value.name,
         email: form.value.email,
         avatar: `"https://avatars.mds.yandex.net/i?id=434f653e3450f644f16f7982c997a7dcac60a3ec-5561596-images-thumbs&n=13"`,
