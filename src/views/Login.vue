@@ -58,7 +58,6 @@ const handleLogin = async () => {
       },
     });
     router.push("/");
-    location.reload();
   } catch (error) {
     console.error("Ошибка входа:", error);
   } finally {

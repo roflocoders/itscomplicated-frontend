@@ -17,6 +17,28 @@ export const useAuthStore = defineStore("auth", () => {
 
   const isAuthenticated = computed(() => !!token.value);
 
+  // Функция для загрузки данных пользователя
+  const fetchUserData = async () => {
+    if (token.value) {
+      try {
+        const userResponse = await axios.get("auth/users/me");
+        user.value = userResponse.data;
+      } catch (error) {
+        // Если токен невалидный, очищаем его
+        console.error("Ошибка загрузки данных пользователя:", error);
+        token.value = null;
+        localStorage.removeItem("token");
+        delete axios.defaults.headers.common["Authorization"];
+        user.value = null;
+      }
+    }
+  };
+
+  // Загружаем данные пользователя при инициализации, если есть токен
+  if (token.value) {
+    fetchUserData();
+  }
+
   const updateUserData = (userData, userToken) => {
     user.value = userData;
     token.value = userToken;
@@ -24,17 +46,14 @@ export const useAuthStore = defineStore("auth", () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
   };
 
-  // Логин теперь только получает токен, затем запрашивает пользователя
   const login = async (data, config = {}) => {
     const response = await axios.post("auth/login", data, config);
     const accessToken = response.data.access_token;
 
-    // Сохраняем токен
     token.value = accessToken;
     localStorage.setItem("token", accessToken);
     axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
 
-    // Запрашиваем данные пользователя с токеном
     const userResponse = await axios.get("auth/users/me");
     user.value = userResponse.data;
   };
@@ -54,5 +73,6 @@ export const useAuthStore = defineStore("auth", () => {
     login,
     updateUserData,
     logout,
+    fetchUserData,
   };
 });

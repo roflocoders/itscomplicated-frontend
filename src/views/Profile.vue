@@ -5,7 +5,8 @@
         <n-space align="center">
           <n-avatar round size="large" :src="authStore.user?.avatar" />
           <div>
-            <h3 style="margin: 0">{{ authStore.user?.name }}</h3>
+            <h3 style="margin: 0">{{ authStore.user?.username }}</h3>
+            <p style="margin: 0; color: #666">{{ authStore.user?.full_name }}</p>
             <p style="margin: 0; color: #666">{{ authStore.user?.email }}</p>
           </div>
         </n-space>

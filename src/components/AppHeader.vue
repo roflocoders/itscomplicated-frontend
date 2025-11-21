@@ -48,7 +48,7 @@
               :src="authStore.user?.avatar"
               class="user-avatar"
             />
-            <span class="user-name">{{ authStore.user?.name }}</span>
+            <span class="user-name">{{ authStore.user?.username }}</span>
             <n-icon size="16" class="dropdown-arrow">
               <ChevronDownIcon />
             </n-icon>
@@ -72,7 +72,6 @@ import {
 
 const authStore = useAuthStore();
 const router = useRouter();
-const route = useRoute();
 
 const userMenuOptions = computed(() => [
   {

@@ -13,7 +13,7 @@
           class="create-post-trigger"
           @click="showCreatePost = true"
         >
-          Что у вас нового, {{ authStore.user?.name.split(" ")[0] }}?
+          Что у вас нового, {{ authStore.user?.username.split(" ")[0] }}?
         </n-button>
       </div>
     </n-card>
