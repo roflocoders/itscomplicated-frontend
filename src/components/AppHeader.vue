@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, h } from "vue";
 import { useAuthStore } from "../stores/auth";
 import { useRouter, useRoute } from "vue-router";
 import {
@@ -115,7 +115,7 @@ const handleLogout = () => {
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -125,7 +125,11 @@ const handleLogout = () => {
 .logo {
   cursor: pointer;
   font-weight: 700;
-  margin-right: 32px;
+  margin-right: 8px;
+}
+
+.header-left{
+  flex-flow: row nowrap !important;
 }
 
 .nav-button {
@@ -134,6 +138,14 @@ const handleLogout = () => {
   transition: all 0.3s ease;
   border-radius: 8px;
   padding: 8px 16px;
+}
+
+.nav-button :deep(.n-button__content) {
+  margin-left: 8px;
+}
+
+.nav-button :deep(.n-button__icon) {
+  margin-right: 0;
 }
 
 .nav-button:hover {
@@ -147,12 +159,21 @@ const handleLogout = () => {
   background: rgba(255, 255, 255, 0.2) !important;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
 .user-info {
+  flex-flow: row nowrap !important;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 12px 8px;
   border-radius: 12px;
   transition: all 0.3s ease;
   color: white;
+  display: flex;
+  align-items: center;
 }
 
 .user-info:hover {
@@ -162,6 +183,9 @@ const handleLogout = () => {
 .user-avatar {
   border: 2px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .user-info:hover .user-avatar {
@@ -177,10 +201,53 @@ const handleLogout = () => {
 .dropdown-arrow {
   transition: transform 0.3s ease;
   color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .user-info:hover .dropdown-arrow {
   transform: rotate(180deg);
   color: white;
+}
+
+@media (max-width: 580px) {
+  .nav-button {
+    display: none !important;
+  }
+
+  .header-left {
+    gap: 0px !important;
+  }
+
+  .logo {
+    margin-right: 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  .user-info {
+    gap: 4px !important;
+  }
+
+  .user-name {
+    display: none;
+    margin: 0;
+  }
+}
+</style>
+
+<style>
+.n-dropdown-menu {
+  padding: 8px !important;
+  border-radius: 8px;
+  width: 139px;
+}
+
+.n-dropdown-option-body__prefix {
+  align-self: center;
+  margin-right: 10px;
+  width: 25px !important;
+  height: 25px !important;
 }
 </style>
