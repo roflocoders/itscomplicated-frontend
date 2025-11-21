@@ -9,7 +9,13 @@ export const useAuthStore = defineStore("auth", () => {
 
   const isAuthenticated = computed(() => !!token.value);
 
-  const updateUserData = (userData, userToken) => {
+  const login = (userData, userToken) => {
+    user.value = userData;
+    token.value = userToken;
+    localStorage.setItem("token", userToken);
+  };
+
+  const register = (userData, userToken) => {
     user.value = userData;
     token.value = userToken;
     localStorage.setItem("token", userToken);
@@ -26,7 +32,8 @@ export const useAuthStore = defineStore("auth", () => {
     user,
     token,
     isAuthenticated,
-    updateUserData,
+    login,
+    register,
     logout,
   };
 });

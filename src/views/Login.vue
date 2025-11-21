@@ -16,6 +16,15 @@
         <n-button type="primary" @click="handleLogin" :loading="loading" block>
           Войти
         </n-button>
+
+        <n-divider />
+
+        <n-space justify="center">
+          <span>Нет аккаунта?</span>
+          <n-button text @click="$router.push('/register')" type="primary">
+            Зарегистрироваться
+          </n-button>
+        </n-space>
       </n-form>
     </n-card>
   </div>
@@ -24,7 +33,7 @@
 <style>
 .login-container {
   max-width: 400px;
-  margin: 100px auto;
+  margin: 50px auto;
 }
 </style>
 
@@ -47,13 +56,12 @@ const handleLogin = async () => {
 
   // Имитация авторизации
   setTimeout(() => {
-    authStore.updateUserData(
+    authStore.login(
       {
         id: 1,
         name: "Иван Иванов",
         email: form.value.email,
-        avatar:
-          "https://avatars.mds.yandex.net/i?id=434f653e3450f644f16f7982c997a7dcac60a3ec-5561596-images-thumbs&n=13",
+        avatar: "https://picsum.photos/40",
       },
       "fake-jwt-token"
     );

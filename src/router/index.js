@@ -19,6 +19,11 @@ const routes = [
     component: () => import("../views/Login.vue"),
   },
   {
+    path: "/register",
+    name: "Register",
+    component: () => import("../views/Register.vue"),
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/",
   },
@@ -29,14 +34,12 @@ const router = createRouter({
   routes,
 });
 
-// ... после создания router
-
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
 
   if (to.meta.requiresAuth && !token) {
     next("/login");
-  } else if (to.name === "Login" && token) {
+  } else if ((to.name === "Login" || to.name === "Register") && token) {
     next("/");
   } else {
     next();
