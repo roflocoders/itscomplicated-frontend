@@ -21,14 +21,15 @@ const authStore = useAuthStore();
 // Проверяем авторизацию при загрузке приложения
 onMounted(() => {
   const token = localStorage.getItem("token");
-  if (token && !authStore.isAuthenticated) {
+  if (token) {
     // В реальном приложении здесь была бы проверка токена
-    authStore.login(
+    authStore.updateUserData(
       {
         id: 1,
         name: "Иван Иванов",
         email: "user@example.com",
-        avatar: "https://picsum.photos/40",
+        avatar:
+          "https://avatars.mds.yandex.net/i?id=434f653e3450f644f16f7982c997a7dcac60a3ec-5561596-images-thumbs&n=13",
       },
       token
     );
