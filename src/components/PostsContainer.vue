@@ -37,8 +37,6 @@ const props = defineProps({
   },
 });
 
-console.log(props.basePostsUrl);
-
 const posts = ref([]);
 const loading = ref(false);
 const loadingMore = ref(false);

@@ -19,7 +19,6 @@
 import { ref } from "vue";
 import { useAuthStore } from "./stores/auth";
 import AppHeader from "./components/AppHeader.vue";
-import { darkTheme } from "naive-ui";
 
 const authStore = useAuthStore();
 const theme = ref(null);
