@@ -97,8 +97,8 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 import { useAuthStore } from "../stores/auth";
-import { generateId } from "../utils/idGenerator";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -127,12 +127,13 @@ const validators = {
       return "Никнейм должен содержать хотя бы 3 символа";
     if (value.trim().length > 20)
       return "Никнейм не должен быть длиннее 20 символов";
-    if (!/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/.test(value))
-      return "Никнейм должен содержать только буквы, пробелы и дефисы";
+    if (!/^[0-9a-zA-Zа-яА-ЯёЁ\s\_]+$/.test(value))
+      return "Никнейм должен содержать только буквы, цифры, символ \"_\"";
     return "";
   },
 
   fullName: (value) => {
+    if (!value.trim()) return "";
     if (!/^[a-zA-Zа-яА-ЯёЁ\s\-']+$/.test(value))
       return "Имя и фамилия должны содержать только буквы, пробелы, дефисы и апострофы";
     if (value.trim().length > 100)
@@ -222,21 +223,59 @@ const handleRegister = async () => {
 
   loading.value = true;
 
-  // Имитация регистрации
-  setTimeout(() => {
-    // В реальном приложении здесь был бы API запрос
-    authStore.updateUserData(
-      {
-        id: generateId(),
-        name: form.value.username,
-        email: form.value.email,
-        avatar: `"https://avatars.mds.yandex.net/i?id=434f653e3450f644f16f7982c997a7dcac60a3ec-5561596-images-thumbs&n=13"`,
-      },
-      "fake-jwt-token-" + Date.now()
-    );
+  // Очищаем предыдущие ошибки
+  formErrors.value = {
+    username: "",
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  };
 
+  try {
+    const registerData = {
+      username: form.value.username,
+      password: form.value.password,
+      email: form.value.email,
+      full_name: form.value.fullName,
+    };
+
+    await authStore.register(registerData);
     router.push("/");
+  } catch (error) {
+    console.error("Ошибка регистрации:", error);
+
+    // Обработка ошибок валидации от сервера
+    if (axios.isAxiosError(error) && error.response?.status === 422) {
+      // Ошибки валидации от FastAPI
+      const validationErrors = error.response?.data?.detail || [];
+      if (Array.isArray(validationErrors)) {
+        validationErrors.forEach((err) => {
+          const field = err.loc?.[err.loc.length - 1];
+          if (field && formErrors.value.hasOwnProperty(field)) {
+            formErrors.value[field] = err.msg;
+          } else if (field === "full_name") {
+            formErrors.value.fullName = err.msg;
+          }
+        });
+      }
+    } else if (axios.isAxiosError(error) && error.response?.status === 400) {
+      // Общая ошибка 400
+      const errorMessage =
+        error?.response?.data?.detail ||
+        error?.message ||
+        "Произошла ошибка при регистрации. Попробуйте позже.";
+      formErrors.value.email = errorMessage;
+    } else {
+      // Другие ошибки
+      const errorMessage =
+        error?.response?.data?.detail ||
+        error?.message ||
+        "Произошла неизвестная ошибка. Попробуйте позже.";
+      formErrors.value.email = errorMessage;
+    }
+  } finally {
     loading.value = false;
-  }, 1000);
+  }
 };
 </script>

@@ -39,13 +39,6 @@ export const useAuthStore = defineStore("auth", () => {
     fetchUserData();
   }
 
-  const updateUserData = (userData, userToken) => {
-    user.value = userData;
-    token.value = userToken;
-    localStorage.setItem("token", userToken);
-    axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
-  };
-
   const login = async (data, config = {}) => {
     const response = await axios.post("auth/login", data, config);
     const accessToken = response.data.access_token;
@@ -56,6 +49,24 @@ export const useAuthStore = defineStore("auth", () => {
 
     const userResponse = await axios.get("auth/users/me");
     user.value = userResponse.data;
+  };
+
+  const register = async (data) => {
+    await axios.post("auth/register", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    // После регистрации автоматически логинимся
+    const loginParams = new URLSearchParams();
+    loginParams.append("username", data.username);
+    loginParams.append("password", data.password);
+
+    await login(loginParams, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
   };
 
   const logout = () => {
@@ -71,7 +82,7 @@ export const useAuthStore = defineStore("auth", () => {
     token,
     isAuthenticated,
     login,
-    updateUserData,
+    register,
     logout,
     fetchUserData,
   };
