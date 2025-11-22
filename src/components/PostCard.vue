@@ -2,15 +2,10 @@
   <n-card class="post-card" :content-style="{ padding: 0 }">
     <div class="post-header">
       <n-space align="center">
-        <n-avatar
-          round
-          size="medium"
-          class="profile-avatar"
-          :src="getUserAvatar(post.author_username)"
-        />
+        <n-avatar round size="medium" class="profile-avatar" />
         <div class="author-info">
           <div class="author-name" @click="goToProfile(post.author_username)">
-            {{ getUserFullName(post.author_username) || post.author_username }}
+            {{ post.author_full_name || post.author_username }}
           </div>
           <div class="post-time">{{ formatTime(post.timestamp) }}</div>
         </div>
@@ -20,6 +15,10 @@
           <EllipsisHorizontalIcon />
         </n-icon>
       </n-button>
+    </div>
+
+    <div class="post-title">
+      {{ post.title }}
     </div>
 
     <div class="post-content">
@@ -70,13 +69,8 @@
 
     <div v-if="showComments" class="comments-section">
       <div class="comments-list">
-        <div v-for="comment in post.comments" :key="comment.id" class="comment">
-          <n-avatar
-            round
-            size="small"
-            class="comment-avatar"
-            :src="getUserAvatar(comment.author_username)"
-          />
+        <!-- <div v-for="comment in post.comments" :key="comment.id" class="comment">
+          <n-avatar round size="small" class="comment-avatar" />
           <div class="comment-content">
             <div class="comment-header">
               <strong
@@ -93,7 +87,7 @@
             </div>
             <div class="comment-text">{{ comment.text }}</div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -172,8 +166,7 @@ const newComment = ref("");
 const showImagePreview = ref(false);
 
 // Хранилище для full_name пользователей
-const userFullNames = ref({});
-const userAvatars = ref({});
+// const userFullNames = ref({});
 
 const formatTime = (timestamp) => {
   if (!timestamp) return "только что";
@@ -203,28 +196,17 @@ const handleLike = () => {
 };
 
 // Синхронная функция для получения full_name из хранилища
-const getUserFullName = (username) => {
-  if (!username) return null;
+// const getUserFullName = (username) => {
+//   if (!username) return null;
 
-  // Если это текущий пользователь, возвращаем его full_name
-  if (authStore.user?.username === username) {
-    return authStore.user?.full_name || null;
-  }
+//   // Если это текущий пользователь, возвращаем его full_name
+//   if (authStore.user?.username === username) {
+//     return authStore.user?.full_name || null;
+//   }
 
-  // Возвращаем из хранилища (может быть null, если еще не загружено)
-  return userFullNames.value[username] || null;
-};
-
-// Функция для получения аватара пользователя
-const getUserAvatar = (username) => {
-  if (!username) return null;
-
-  if (authStore.user?.username === username) {
-    return authStore.user?.avatar || null;
-  }
-
-  return userAvatars.value[username] || null;
-};
+//   // Возвращаем из хранилища (может быть null, если еще не загружено)
+//   return userFullNames.value[username] || null;
+// };
 
 // Асинхронная функция для загрузки full_name
 const loadUserFullName = async (username) => {
@@ -244,13 +226,10 @@ const loadUserFullName = async (username) => {
   try {
     const userData = await authStore.getUserByUsername(username);
     const fullName = userData?.full_name || null;
-    const avatar = userData?.avatar || null;
     userFullNames.value[username] = fullName;
-    userAvatars.value[username] = avatar;
   } catch (error) {
     console.error(`Ошибка загрузки данных пользователя ${username}:`, error);
     userFullNames.value[username] = null;
-    userAvatars.value[username] = null;
   }
 };
 
