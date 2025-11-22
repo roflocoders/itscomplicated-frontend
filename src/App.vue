@@ -3,7 +3,7 @@
     <n-message-provider>
       <n-loading-bar-provider>
         <n-dialog-provider>
-          <n-layout style="height: 100vh; background: #f8f9fa">
+          <n-layout style="height: 100vh">
             <AppHeader v-if="authStore.isAuthenticated" />
             <n-layout-content content-style="padding: 0;">
               <router-view />
