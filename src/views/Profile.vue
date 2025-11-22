@@ -95,6 +95,8 @@
         </n-space>
       </n-space>
     </n-card>
+
+    <PostsContainer />
   </div>
 </template>
 
@@ -367,6 +369,7 @@ import {
   PersonAddOutline as PersonAddIcon,
   PersonRemoveOutline as PersonRemoveIcon,
 } from "@vicons/ionicons5";
+import PostsContainer from "../components/PostsContainer.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -396,7 +399,7 @@ const loadUserProfile = async () => {
   try {
     // Загружаем профиль через API для получения полных данных (включая followers_count и following_count)
     profileUser.value = await authStore.getUserProfile(username.value);
-    
+
     // Проверяем, является ли это профилем текущего пользователя
     if (authStore.user?.username === username.value) {
       isFollowing.value = false; // Не показываем кнопку подписки для своего профиля
