@@ -79,6 +79,16 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  const getUserProfile = async (username) => {
+    try {
+      const response = await axios.get(`follow/users/${username}/profile`);
+      return response.data;
+    } catch (error) {
+      console.error("Ошибка загрузки профиля пользователя:", error);
+      throw error;
+    }
+  };
+
   const checkFollowStatus = async (targetUsername) => {
     try {
       const response = await axios.get(`follow/${targetUsername}/status`);
@@ -121,6 +131,7 @@ export const useAuthStore = defineStore("auth", () => {
     logout,
     fetchUserData,
     getUserByUsername,
+    getUserProfile,
     checkFollowStatus,
     toggleFollowUser,
   };

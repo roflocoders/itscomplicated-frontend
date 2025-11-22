@@ -46,15 +46,11 @@
             <div class="profile-stats">
               <n-space>
                 <div class="stat">
-                  <strong>42</strong>
-                  <span>постов</span>
+                  <strong>{{ profileUser?.followers_count }}</strong>
+                  <span>подписчик(ов)</span>
                 </div>
                 <div class="stat">
-                  <strong>128</strong>
-                  <span>подписчиков</span>
-                </div>
-                <div class="stat">
-                  <strong>96</strong>
+                  <strong>{{ profileUser?.following_count }}</strong>
                   <span>подписок</span>
                 </div>
               </n-space>
@@ -405,7 +401,7 @@ const loadUserProfile = async () => {
       isFollowing.value = false; // Не показываем кнопку подписки для своего профиля
     } else {
       // Загружаем данные другого пользователя
-      profileUser.value = await authStore.getUserByUsername(username.value);
+      profileUser.value = await authStore.getUserProfile(username.value);
       // Проверяем статус подписки
       await loadFollowStatus();
     }
@@ -443,6 +439,7 @@ const handleFollowToggle = async () => {
     await authStore.toggleFollowUser(username.value, isFollowing.value);
     // Обновляем статус подписки после переключения
     await loadFollowStatus();
+    await loadUserProfile();
   } catch (error) {
     console.error("Ошибка изменения статуса подписки:", error);
   } finally {
