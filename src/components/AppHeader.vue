@@ -28,7 +28,9 @@
           text
           @click="$router.push(`/profile/${authStore.user?.username}`)"
           class="nav-button"
-          :class="{ active: $route.path.startsWith('/profile/') }"
+          :class="{
+            active: $route.path == `/profile/${authStore.user?.username}`,
+          }"
         >
           <template #icon>
             <n-icon>
