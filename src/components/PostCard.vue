@@ -17,11 +17,10 @@
       </n-button>
     </div>
 
-    <div class="post-title">
-      {{ post.title }}
-    </div>
-
     <div class="post-content">
+      <div class="post-title">
+        {{ post.title }}
+      </div>
       <p>{{ post.content }}</p>
 
       <div v-if="post.image" class="post-image-container">
@@ -382,6 +381,12 @@ watch(
 
 .post-content {
   padding: 20px 24px;
+}
+
+.post-title {
+  font-size: x-large;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
 .post-content p {

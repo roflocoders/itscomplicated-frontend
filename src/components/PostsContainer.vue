@@ -56,6 +56,7 @@ const transformPost = (post) => ({
   id: post.id,
   author_username: post.author_username,
   author_full_name: post.author_full_name,
+  title: post.title,
   content: post.content,
   image: post.media_url || null,
   likes: 0,
