@@ -126,6 +126,23 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  const createPost = async (postData) => {
+    try {
+      const response = await axios.post("posts/", {
+        title: postData.title || "",
+        content: postData.content,
+        post_type: postData.media_url ? "image" : "text",
+        media_url: postData.media_url || "",
+        is_published: true,
+        wall_user_id: postData.wall_user_id,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Ошибка создания поста:", error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     user.value = null;
     token.value = null;
@@ -147,5 +164,6 @@ export const useAuthStore = defineStore("auth", () => {
     checkFollowStatus,
     toggleFollowUser,
     getFeedPosts,
+    createPost,
   };
 });

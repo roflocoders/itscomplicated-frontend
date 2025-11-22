@@ -119,31 +119,59 @@ const newPost = ref({
   image: "",
 });
 
-const handleCreatePost = () => {
-  if (newPost.value.content.trim()) {
-    posting.value = true;
+const handleCreatePost = async () => {
+  if (!newPost.value.content.trim()) {
+    return;
+  }
 
-    setTimeout(() => {
-      const post = {
-        title: newPost.value.title,
-        id: generateId(),
-        author_username: authStore.user?.username,
-        author_full_name: authStore.user?.full_name,
-        content: newPost.value.content,
-        image: newPost.value.image,
-        likes: 0,
-        isLiked: false,
-        timestamp: new Date().getTime(),
-        comments: [],
-      };
+  posting.value = true;
 
-      emit("post-created", post);
-      newPost.value.title = "";
-      newPost.value.content = "";
-      newPost.value.image = "";
-      showCreatePost.value = false;
-      posting.value = false;
-    }, 800);
+  try {
+    // Получаем ID текущего пользователя
+    let wallUserId = authStore.user?.id;
+    
+    // Если ID нет в authStore.user, получаем профиль пользователя
+    if (!wallUserId && authStore.user?.username) {
+      const userProfile = await authStore.getUserProfile(authStore.user.username);
+      wallUserId = userProfile?.id;
+    }
+
+    // Отправляем пост на сервер
+    const postData = {
+      title: newPost.value.title,
+      content: newPost.value.content,
+      media_url: newPost.value.image || "",
+      wall_user_id: wallUserId,
+    };
+
+    const createdPost = await authStore.createPost(postData);
+
+    const post = {
+      id: generateId(),
+      author_username: authStore.user?.username,
+      author_full_name: authStore.user?.full_name,
+      title: createdPost.title || newPost.value.title,
+      content: createdPost.content || newPost.value.content,
+      image: createdPost.media_url || newPost.value.image,
+      likes: 0,
+      isLiked: false,
+      timestamp: createdPost.created_at
+        ? new Date(createdPost.created_at).getTime()
+        : new Date().getTime(),
+      comments: [],
+    };
+
+    emit("post-created", post);
+
+    // Очищаем форму
+    newPost.value.title = "";
+    newPost.value.content = "";
+    newPost.value.image = "";
+    showCreatePost.value = false;
+  } catch (error) {
+    console.error("Ошибка при создании поста:", error);
+  } finally {
+    posting.value = false;
   }
 };
 </script>
@@ -198,8 +226,12 @@ const handleCreatePost = () => {
   transform: translateY(-1px);
 }
 
+.create-post-form {
+  padding-block: 20px;
+}
+
 .create-post-form :deep(.n-form-item) {
-  padding: 20px 20px 0px 20px;
+  margin-inline: 20px;
   display: block !important;
 }
 
@@ -222,7 +254,8 @@ const handleCreatePost = () => {
 
 .image-preview {
   position: relative;
-  margin-top: 16px;
+  margin-inline: 20px;
+  max-height: 300px;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
