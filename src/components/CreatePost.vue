@@ -198,12 +198,9 @@ const handleCreatePost = () => {
   transform: translateY(-1px);
 }
 
-.create-post-modal :deep(.n-card__content) {
-  padding: 0;
-}
-
-.create-post-form {
-  padding: 0 20px;
+.create-post-form :deep(.n-form-item) {
+  padding: 20px 20px 0px 20px;
+  display: block !important;
 }
 
 .post-textarea :deep(textarea) {
@@ -220,7 +217,6 @@ const handleCreatePost = () => {
 
 .post-textarea :deep(textarea):focus {
   border: none;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
   background: white;
 }
 
