@@ -122,7 +122,6 @@ const handleLogout = () => {
   backdrop-filter: blur(10px);
   border-bottom: none;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  position: relative;
   overflow: hidden;
 }
 
