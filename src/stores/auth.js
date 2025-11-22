@@ -114,6 +114,16 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  const getFeedPosts = async (skip = 0, limit = 10) => {
+    try {
+      const response = await axios.get(`posts/feed?skip=${skip}&limit=${limit}`);
+      return response.data;
+    } catch (error) {
+      console.error("Ошибка загрузки постов:", error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     user.value = null;
     token.value = null;
@@ -134,5 +144,6 @@ export const useAuthStore = defineStore("auth", () => {
     getUserProfile,
     checkFollowStatus,
     toggleFollowUser,
+    getFeedPosts,
   };
 });

@@ -25,14 +25,16 @@
       </div>
     </n-card>
 
-    <div class="posts-grid">
-      <PostCard
-        v-for="post in posts"
-        :key="post.id"
-        :post="post"
-        class="post-item fade-in"
-      />
-    </div>
+    <n-spin :show="loading">
+      <div class="posts-grid">
+        <PostCard
+          v-for="post in posts"
+          :key="post.id"
+          :post="post"
+          class="post-item fade-in"
+        />
+      </div>
+    </n-spin>
 
     <n-modal
       v-model:show="showCreatePost"
@@ -377,67 +379,37 @@ const newPost = ref({
 });
 const showCreatePost = ref(false);
 const posting = ref(false);
+const loading = ref(false);
 
-// Обновленные моковые данные с временными метками
-const mockPosts = [
-  {
-    id: generateId(),
-    author_username: "lobster",
-    content:
-      "Сегодня прекрасный день для программирования! 🚀 Только что закончил новый фича на Vue 3. Что думаете о Composition API?",
-    likes: 15,
+// Функция для преобразования данных поста из API в формат для PostCard
+const transformPost = (post) => {
+  return {
+    id: post.id,
+    author_username: post.author_username,
+    content: post.content,
+    image: post.media_url || null,
+    likes: 0, // Пока нет данных о лайках
     isLiked: false,
-    timestamp: Date.now() - 3600000, // 1 час назад
-    comments: [
-      {
-        id: generateId(),
-        author_username: "peter",
-        text: "Полностью согласен! Composition API - это game changer!",
-        timestamp: Date.now() - 1800000,
-      },
-    ],
-  },
-  {
-    id: generateId(),
-    author_username: "maria_petrova",
-    content:
-      "Только что закончила новый проект на Vue 3! Использовала Naive UI - потрясающая библиотека компонентов!",
-    image:
-      "https://png.pngtree.com/thumb_back/fh260/background/20230610/pngtree-picture-of-a-blue-bird-on-a-black-background-image_2937385.jpg",
-    likes: 23,
-    isLiked: true,
-    timestamp: Date.now() - 7200000, // 2 часа назад
-    comments: [],
-  },
-  {
-    id: generateId(),
-    author_username: "alexey_smirnov",
-    content:
-      "Ребята, посмотрите на этот закат! 🌅 Иногда нужно отвлекаться от кода и наслаждаться природой.",
-    image:
-      "https://zastavki.gas-kvas.com/uploads/posts/2024-05/thumbs/zastavki-gas-kvas-com-ihrv-p-zastavki-smeshnie-na-avu-7.jpg",
-    likes: 42,
-    isLiked: false,
-    timestamp: Date.now() - 86400000, // 1 день назад
-    comments: [
-      {
-        id: generateId(),
-        author_username: "lobster",
-        text: "Как красиво! Где это снято?",
-        timestamp: Date.now() - 43200000,
-      },
-      {
-        id: generateId(),
-        author_username: "alexey_smirnov",
-        text: "Это в Крыму, недалеко от Ялты!",
-        timestamp: Date.now() - 36000000,
-      },
-    ],
-  },
-];
+    timestamp: new Date(post.created_at).getTime(),
+    comments: [], // Комментарии пока пустые
+  };
+};
+
+// Загрузка постов из ленты
+const loadPosts = async () => {
+  loading.value = true;
+  try {
+    const feedPosts = await authStore.getFeedPosts(0, 10);
+    posts.value = feedPosts.map(transformPost);
+  } catch (error) {
+    console.error("Ошибка загрузки постов:", error);
+  } finally {
+    loading.value = false;
+  }
+};
 
 onMounted(() => {
-  posts.value = mockPosts;
+  loadPosts();
 });
 
 const createPost = () => {
