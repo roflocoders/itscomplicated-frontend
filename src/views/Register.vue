@@ -128,7 +128,7 @@ const validators = {
     if (value.trim().length > 20)
       return "Никнейм не должен быть длиннее 20 символов";
     if (!/^[0-9a-zA-Zа-яА-ЯёЁ\s\_]+$/.test(value))
-      return "Никнейм должен содержать только буквы, цифры, символ \"_\"";
+      return 'Никнейм должен содержать только буквы, цифры, символ "_"';
     return "";
   },
 
@@ -265,14 +265,17 @@ const handleRegister = async () => {
         error?.response?.data?.detail ||
         error?.message ||
         "Произошла ошибка при регистрации. Попробуйте позже.";
-      formErrors.value.email = errorMessage;
+      if (errorMessage === "Никнейм уже занят")
+        formErrors.value.username = errorMessage;
+      else if (errorMessage === "Почта уже занята")
+        formErrors.value.email = errorMessage;
     } else {
       // Другие ошибки
       const errorMessage =
         error?.response?.data?.detail ||
         error?.message ||
         "Произошла неизвестная ошибка. Попробуйте позже.";
-      formErrors.value.email = errorMessage;
+      console.error(errorMessage);
     }
   } finally {
     loading.value = false;
