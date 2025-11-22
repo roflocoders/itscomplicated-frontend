@@ -67,9 +67,9 @@
 </template>
 
 <script setup>
-import { ref, computed, h } from "vue";
+import { computed, h } from "vue";
 import { useAuthStore } from "../stores/auth";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import {
   HomeOutline as HomeIcon,
   PersonOutline as PersonIcon,

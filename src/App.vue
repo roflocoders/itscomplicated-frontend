@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :theme="theme" :theme-overrides="themeOverrides">
+  <n-config-provider :theme-overrides="themeOverrides">
     <n-message-provider>
       <n-loading-bar-provider>
         <n-dialog-provider>
@@ -16,12 +16,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import { useAuthStore } from "./stores/auth";
 import AppHeader from "./components/AppHeader.vue";
 
 const authStore = useAuthStore();
-const theme = ref(null);
 
 const themeOverrides = {
   common: {
