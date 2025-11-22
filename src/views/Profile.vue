@@ -81,13 +81,20 @@
             Выйти из аккаунта
           </n-button>
 
-          <n-button v-else type="primary" class="follow-button">
+          <n-button
+            v-else
+            :type="isFollowing ? 'default' : 'primary'"
+            :class="isFollowing ? 'unfollow-button' : 'follow-button'"
+            @click="handleFollowToggle"
+            :loading="followLoading"
+          >
             <template #icon>
               <n-icon>
-                <PersonAddIcon />
+                <PersonRemoveIcon v-if="isFollowing" />
+                <PersonAddIcon v-else />
               </n-icon>
             </template>
-            Подписаться
+            {{ isFollowing ? "Отписаться" : "Подписаться" }}
           </n-button>
         </n-space>
       </n-space>
@@ -319,6 +326,19 @@
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
+.unfollow-button {
+  border-radius: 12px;
+  padding: 0 28px;
+  height: 44px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.unfollow-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
 @media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
@@ -349,6 +369,7 @@ import {
   MailOutline as MailIcon,
   LogOutOutline as LogOutIcon,
   PersonAddOutline as PersonAddIcon,
+  PersonRemoveOutline as PersonRemoveIcon,
 } from "@vicons/ionicons5";
 
 const authStore = useAuthStore();
@@ -357,6 +378,8 @@ const route = useRoute();
 
 const profileUser = ref(null);
 const loading = ref(false);
+const isFollowing = ref(false);
+const followLoading = ref(false);
 
 const username = computed(() => {
   return route.params.username || null;
@@ -379,9 +402,12 @@ const loadUserProfile = async () => {
     if (authStore.user?.username === username.value) {
       // Показываем текущего пользователя
       profileUser.value = authStore.user;
+      isFollowing.value = false; // Не показываем кнопку подписки для своего профиля
     } else {
       // Загружаем данные другого пользователя
       profileUser.value = await authStore.getUserByUsername(username.value);
+      // Проверяем статус подписки
+      await loadFollowStatus();
     }
   } catch (error) {
     console.error("Ошибка загрузки профиля:", error);
@@ -390,6 +416,37 @@ const loadUserProfile = async () => {
     }
   } finally {
     loading.value = false;
+  }
+};
+
+const loadFollowStatus = async () => {
+  if (isOwnProfile.value || !username.value) {
+    return;
+  }
+
+  try {
+    isFollowing.value = await authStore.checkFollowStatus(username.value);
+  } catch (error) {
+    console.error("Ошибка загрузки статуса подписки:", error);
+    isFollowing.value = false;
+  }
+};
+
+const handleFollowToggle = async () => {
+  if (!username.value || isOwnProfile.value) {
+    return;
+  }
+
+  followLoading.value = true;
+  try {
+    // Передаем текущий статус подписки
+    await authStore.toggleFollowUser(username.value, isFollowing.value);
+    // Обновляем статус подписки после переключения
+    await loadFollowStatus();
+  } catch (error) {
+    console.error("Ошибка изменения статуса подписки:", error);
+  } finally {
+    followLoading.value = false;
   }
 };
 

@@ -72,10 +72,34 @@ export const useAuthStore = defineStore("auth", () => {
   const getUserByUsername = async (username) => {
     try {
       const response = await axios.get(`admin/users/${username}`);
-      console.log(response);
       return response.data;
     } catch (error) {
       console.error("Ошибка загрузки данных пользователя:", error);
+      throw error;
+    }
+  };
+
+  const checkFollowStatus = async (targetUsername) => {
+    try {
+      const response = await axios.get(`follow/${targetUsername}/status`);
+      return response.data.is_following || false;
+    } catch (error) {
+      console.error("Ошибка проверки статуса подписки:", error);
+      throw error;
+    }
+  };
+
+  const toggleFollowUser = async (targetUsername, isCurrentlyFollowing) => {
+    try {
+      if (isCurrentlyFollowing) {
+        // Отписываемся
+        await axios.delete(`follow/${targetUsername}`);
+      } else {
+        // Подписываемся
+        await axios.post(`follow/${targetUsername}`);
+      }
+    } catch (error) {
+      console.error("Ошибка изменения статуса подписки:", error);
       throw error;
     }
   };
@@ -97,5 +121,7 @@ export const useAuthStore = defineStore("auth", () => {
     logout,
     fetchUserData,
     getUserByUsername,
+    checkFollowStatus,
+    toggleFollowUser,
   };
 });
