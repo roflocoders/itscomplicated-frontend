@@ -5,8 +5,7 @@
         <n-avatar
           round
           size="medium"
-          :src="authStore.user?.avatar"
-          class="user-avatar"
+          class="profile-avatar"
         />
         <n-button
           text
@@ -118,7 +117,7 @@
   gap: 12px;
 }
 
-.user-avatar {
+.profile-avatar {
   flex-shrink: 0;
 }
 
@@ -219,8 +218,7 @@ const posting = ref(false);
 const mockPosts = [
   {
     id: generateId(),
-    author: "Иван Иванов",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ivan",
+    author_username: "lobster",
     content:
       "Сегодня прекрасный день для программирования! 🚀 Только что закончил новый фича на Vue 3. Что думаете о Composition API?",
     likes: 15,
@@ -229,17 +227,15 @@ const mockPosts = [
     comments: [
       {
         id: generateId(),
-        author: "Петр",
+        author_username: "peter",
         text: "Полностью согласен! Composition API - это game changer!",
         timestamp: Date.now() - 1800000,
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Peter",
       },
     ],
   },
   {
     id: generateId(),
-    author: "Мария Петрова",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
+    author_username: "maria_petrova",
     content:
       "Только что закончила новый проект на Vue 3! Использовала Naive UI - потрясающая библиотека компонентов!",
     image:
@@ -251,8 +247,7 @@ const mockPosts = [
   },
   {
     id: generateId(),
-    author: "Алексей Смирнов",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alexey",
+    author_username: "alexey_smirnov",
     content:
       "Ребята, посмотрите на этот закат! 🌅 Иногда нужно отвлекаться от кода и наслаждаться природой.",
     image:
@@ -263,17 +258,15 @@ const mockPosts = [
     comments: [
       {
         id: generateId(),
-        author: "Мария",
+        author_username: "lobster",
         text: "Как красиво! Где это снято?",
         timestamp: Date.now() - 43200000,
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
       },
       {
         id: generateId(),
-        author: "Алексей",
+        author_username: "alexey_smirnov",
         text: "Это в Крыму, недалеко от Ялты!",
         timestamp: Date.now() - 36000000,
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alexey",
       },
     ],
   },
@@ -290,8 +283,7 @@ const createPost = () => {
     setTimeout(() => {
       const post = {
         id: generateId(),
-        author: authStore.user?.name || "Аноним",
-        avatar: authStore.user?.avatar,
+        author_username: authStore.user?.username,
         content: newPost.value.content,
         image: newPost.value.image,
         likes: 0,

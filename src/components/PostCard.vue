@@ -2,17 +2,11 @@
   <n-card class="post-card" :content-style="{ padding: 0 }">
     <div class="post-header">
       <n-space align="center">
-        <n-avatar
-          round
-          size="medium"
-          :src="
-            post.avatar ||
-            'https://api.dicebear.com/7.x/avataaars/svg?seed=' + post.author
-          "
-          class="author-avatar"
-        />
+        <n-avatar round size="medium" class="profile-avatar" />
         <div class="author-info">
-          <div class="author-name">{{ post.author }}</div>
+          <div class="author-name" @click="goToProfile(post.author_username)">
+            {{ getUserFullName(post.author_username) || post.author_username }}
+          </div>
           <div class="post-time">{{ formatTime(post.timestamp) }}</div>
         </div>
       </n-space>
@@ -62,19 +56,14 @@
     <div v-if="showComments" class="comments-section">
       <div class="comments-list">
         <div v-for="comment in post.comments" :key="comment.id" class="comment">
-          <n-avatar
-            round
-            size="small"
-            :src="
-              comment.avatar ||
-              'https://api.dicebear.com/7.x/avataaars/svg?seed=' +
-                comment.author
-            "
-            class="comment-avatar"
-          />
+          <n-avatar round size="small" class="profile-avatar" />
           <div class="comment-content">
             <div class="comment-header">
-              <strong class="comment-author">{{ comment.author }}</strong>
+              <strong
+                class="author-name"
+                @click="goToProfile(comment.author_username)"
+                >{{ getUserFullName(comment.author_username) || comment.author_username }}</strong
+              >
               <span class="comment-time">{{
                 formatTime(comment.timestamp)
               }}</span>
@@ -116,7 +105,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 import {
   HeartOutline as HeartIcon,
   ChatbubbleOutline as ChatbubbleOutlineIcon,
@@ -132,9 +123,14 @@ const props = defineProps({
   },
 });
 
+const router = useRouter();
+const authStore = useAuthStore();
 const showComments = ref(false);
 const newComment = ref("");
 const showImagePreview = ref(false);
+
+// Хранилище для full_name пользователей
+const userFullNames = ref({});
 
 const formatTime = (timestamp) => {
   if (!timestamp) return "только что";
@@ -148,10 +144,68 @@ const formatTime = (timestamp) => {
   return date.toLocaleDateString("ru-RU");
 };
 
+const goToProfile = (username) => {
+  if (username) {
+    router.push(`/profile/${username}`);
+  }
+};
+
 const handleLike = () => {
   if (props.post.isLiked) props.post.likes--;
   else props.post.likes++;
   props.post.isLiked = !props.post.isLiked;
+};
+
+// Синхронная функция для получения full_name из хранилища
+const getUserFullName = (username) => {
+  if (!username) return null;
+  
+  // Если это текущий пользователь, возвращаем его full_name
+  if (authStore.user?.username === username) {
+    return authStore.user?.full_name || null;
+  }
+  
+  // Возвращаем из хранилища (может быть null, если еще не загружено)
+  return userFullNames.value[username] || null;
+};
+
+// Асинхронная функция для загрузки full_name
+const loadUserFullName = async (username) => {
+  if (!username) return;
+  
+  // Если это текущий пользователь, пропускаем
+  if (authStore.user?.username === username) {
+    return;
+  }
+  
+  // Если уже загружено, пропускаем
+  if (userFullNames.value[username] !== undefined) {
+    return;
+  }
+  
+  // Загружаем данные пользователя
+  try {
+    const userData = await authStore.getUserByUsername(username);
+    const fullName = userData?.full_name || null;
+    userFullNames.value[username] = fullName;
+  } catch (error) {
+    console.error(`Ошибка загрузки данных пользователя ${username}:`, error);
+    userFullNames.value[username] = null;
+  }
+};
+
+// Загружаем full_name для автора поста и всех комментариев
+const loadUserFullNames = async () => {
+  // Загружаем для автора поста
+  if (props.post.author_username) {
+    await loadUserFullName(props.post.author_username);
+  }
+  
+  // Загружаем для авторов комментариев
+  if (props.post.comments) {
+    const uniqueUsernames = [...new Set(props.post.comments.map(c => c.author_username).filter(Boolean))];
+    await Promise.all(uniqueUsernames.map(username => loadUserFullName(username)));
+  }
 };
 
 const addComment = () => {
@@ -159,17 +213,32 @@ const addComment = () => {
     if (!props.post.comments) {
       props.post.comments = [];
     }
+    const username = authStore.user?.username;
     props.post.comments.push({
       id: generateId(),
-      author: "Вы",
+      author_username: username,
       text: newComment.value,
       timestamp: new Date(),
-      avatar: props.post.user?.avatar,
     });
     newComment.value = "";
     showComments.value = true;
+    
+    // Загружаем full_name для нового комментария
+    if (username) {
+      loadUserFullName(username);
+    }
   }
 };
+
+// Загружаем full_name при монтировании компонента
+onMounted(() => {
+  loadUserFullNames();
+});
+
+// Загружаем full_name при изменении поста или комментариев
+watch(() => [props.post.author_username, props.post.comments], () => {
+  loadUserFullNames();
+}, { deep: true });
 </script>
 
 <style scoped>
@@ -194,18 +263,21 @@ const addComment = () => {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.author-avatar {
+.profile-avatar {
   flex-shrink: 0;
-}
-
-.author-info {
-  margin-left: 12px;
+  margin-right: 12px;
 }
 
 .author-name {
   font-weight: 600;
   color: #1a1a1a;
   margin-bottom: 2px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.author-name:hover {
+  color: #1890ff;
 }
 
 .post-time {
@@ -324,11 +396,6 @@ const addComment = () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 4px;
-}
-
-.comment-author {
-  color: #1a1a1a;
-  font-size: 14px;
 }
 
 .comment-time {
