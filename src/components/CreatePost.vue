@@ -45,6 +45,15 @@
         <n-form class="create-post-form">
           <n-form-item>
             <n-input
+              v-model:value="newPost.title"
+              type="textbox"
+              placeholder="Заголовок поста"
+              class="post-textbox"
+            />
+          </n-form-item>
+
+          <n-form-item>
+            <n-input
               v-model:value="newPost.content"
               type="textarea"
               placeholder="Поделитесь своими мыслями..."
@@ -105,6 +114,7 @@ const authStore = useAuthStore();
 const showCreatePost = ref(false);
 const posting = ref(false);
 const newPost = ref({
+  title: "",
   content: "",
   image: "",
 });
@@ -115,6 +125,7 @@ const handleCreatePost = () => {
 
     setTimeout(() => {
       const post = {
+        title: newPost.value.title,
         id: generateId(),
         author_username: authStore.user?.username,
         author_full_name: authStore.user?.full_name,
@@ -127,6 +138,7 @@ const handleCreatePost = () => {
       };
 
       emit("post-created", post);
+      newPost.value.title = "";
       newPost.value.content = "";
       newPost.value.image = "";
       showCreatePost.value = false;
