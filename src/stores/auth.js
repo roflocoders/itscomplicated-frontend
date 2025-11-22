@@ -17,6 +17,17 @@ export const useAuthStore = defineStore("auth", () => {
 
   const isAuthenticated = computed(() => !!token.value);
 
+  // Функция для очистки авторизации
+  const clearAuth = () => {
+    token.value = null;
+    localStorage.removeItem("token");
+    delete axios.defaults.headers.common["Authorization"];
+    user.value = null;
+    if (router.currentRoute.value.name !== "Login" && router.currentRoute.value.name !== "Register") {
+      router.push("/login");
+    }
+  };
+
   // Функция для загрузки данных пользователя
   const fetchUserData = async () => {
     if (token.value) {
@@ -24,12 +35,14 @@ export const useAuthStore = defineStore("auth", () => {
         const userResponse = await axios.get("auth/users/me");
         user.value = userResponse.data;
       } catch (error) {
-        // Если токен невалидный, очищаем его
-        console.error("Ошибка загрузки данных пользователя:", error);
-        token.value = null;
-        localStorage.removeItem("token");
-        delete axios.defaults.headers.common["Authorization"];
-        user.value = null;
+        // Очищаем токен только при 401 (неавторизован) или 403 (запрещено)
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          console.warn("Токен истек или невалиден, выполняется выход");
+          clearAuth();
+        } else {
+          // При других ошибках просто логируем, но не удаляем токен
+          console.error("Ошибка загрузки данных пользователя:", error);
+        }
       }
     }
   };
@@ -144,11 +157,8 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const logout = () => {
-    user.value = null;
-    token.value = null;
-    localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
-    router.push("auth/login");
+    clearAuth();
+    router.push("/login");
   };
 
   return {
