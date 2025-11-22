@@ -100,6 +100,8 @@
       </n-space>
     </n-card>
 
+    <CreatePost v-if="isOwnProfile" @post-created="handlePostCreated" />
+
     <PostsContainer
       ref="postsContainerRef"
       :basePostsUrl="`posts/wall/${username}`"
@@ -180,6 +182,7 @@
   backdrop-filter: blur(10px);
   overflow: hidden;
   transition: all 0.4s ease;
+  margin-bottom: 20px;
 }
 
 .profile-card:hover {
@@ -377,6 +380,7 @@ import {
   PersonRemoveOutline as PersonRemoveIcon,
 } from "@vicons/ionicons5";
 import PostsContainer from "../components/PostsContainer.vue";
+import CreatePost from "../components/CreatePost.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -390,6 +394,14 @@ const followLoading = ref(false);
 const username = computed(() => {
   return route.params.username || null;
 });
+
+const postsContainerRef = ref(null);
+
+const handlePostCreated = (post) => {
+  if (postsContainerRef.value) {
+    postsContainerRef.value.posts.unshift(post);
+  }
+};
 
 const isOwnProfile = computed(() => {
   if (!username.value) return false;

@@ -48,6 +48,10 @@ const hasMore = ref(true);
 
 const authStore = useAuthStore();
 
+defineExpose({
+  posts,
+});
+
 const transformPost = (post) => ({
   id: post.id,
   author_username: post.author_username,
@@ -65,7 +69,11 @@ const loadPosts = async () => {
   skip.value = 0;
   hasMore.value = true;
   try {
-    const feedPosts = await authStore.getFeedPosts(props.basePostsUrl, 0, limit);
+    const feedPosts = await authStore.getFeedPosts(
+      props.basePostsUrl,
+      0,
+      limit
+    );
     posts.value = feedPosts.map(transformPost);
     skip.value = feedPosts.length;
     if (feedPosts.length < limit) hasMore.value = false;
@@ -80,7 +88,11 @@ const loadMorePosts = async () => {
   if (loadingMore.value || !hasMore.value) return;
   loadingMore.value = true;
   try {
-    const feedPosts = await authStore.getFeedPosts(props.basePostsUrl, skip.value, limit);
+    const feedPosts = await authStore.getFeedPosts(
+      props.basePostsUrl,
+      skip.value,
+      limit
+    );
     if (feedPosts.length === 0) {
       hasMore.value = false;
       return;

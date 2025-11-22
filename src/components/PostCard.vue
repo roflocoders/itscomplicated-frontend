@@ -69,7 +69,7 @@
 
     <div v-if="showComments" class="comments-section">
       <div class="comments-list">
-        <!-- <div v-for="comment in post.comments" :key="comment.id" class="comment">
+        <div v-for="comment in post.comments" :key="comment.id" class="comment">
           <n-avatar round size="small" class="comment-avatar" />
           <div class="comment-content">
             <div class="comment-header">
@@ -87,7 +87,7 @@
             </div>
             <div class="comment-text">{{ comment.text }}</div>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
 
@@ -166,7 +166,7 @@ const newComment = ref("");
 const showImagePreview = ref(false);
 
 // Хранилище для full_name пользователей
-// const userFullNames = ref({});
+const userFullNames = ref({});
 
 const formatTime = (timestamp) => {
   if (!timestamp) return "только что";
@@ -196,17 +196,17 @@ const handleLike = () => {
 };
 
 // Синхронная функция для получения full_name из хранилища
-// const getUserFullName = (username) => {
-//   if (!username) return null;
+const getUserFullName = (username) => {
+  if (!username) return null;
 
-//   // Если это текущий пользователь, возвращаем его full_name
-//   if (authStore.user?.username === username) {
-//     return authStore.user?.full_name || null;
-//   }
+  // Если это текущий пользователь, возвращаем его full_name
+  if (authStore.user?.username === username) {
+    return authStore.user?.full_name || null;
+  }
 
-//   // Возвращаем из хранилища (может быть null, если еще не загружено)
-//   return userFullNames.value[username] || null;
-// };
+  // Возвращаем из хранилища (может быть null, если еще не загружено)
+  return userFullNames.value[username] || null;
+};
 
 // Асинхронная функция для загрузки full_name
 const loadUserFullName = async (username) => {

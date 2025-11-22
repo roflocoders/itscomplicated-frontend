@@ -20,8 +20,9 @@ import { ref } from "vue";
 const postsContainerRef = ref(null);
 
 const handlePostCreated = (post) => {
-  // Передать созданный пост в компонент PostsContainer
-  postsContainerRef.value?.posts.unshift(post);
+  if (postsContainerRef.value) {
+    postsContainerRef.value.posts.unshift(post);
+  }
 };
 </script>
 
