@@ -71,7 +71,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const getUserByUsername = async (username) => {
     try {
-      const response = await axios.get(`admin/users/${username}`);
+      const response = await axios.get(`/follow/users/${username}/profile`);
       return response.data;
     } catch (error) {
       console.error("Ошибка загрузки данных пользователя:", error);
