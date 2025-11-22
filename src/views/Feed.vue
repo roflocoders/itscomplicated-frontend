@@ -8,7 +8,7 @@
 
     <CreatePost @post-created="handlePostCreated" />
 
-    <PostsContainer ref="postsContainerRef" />
+    <PostsContainer ref="postsContainerRef" :basePostsUrl="'posts/feed'" />
   </div>
 </template>
 

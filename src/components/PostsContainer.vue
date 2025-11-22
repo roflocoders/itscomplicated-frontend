@@ -30,6 +30,15 @@ import { ref, onMounted } from "vue";
 import { useAuthStore } from "../stores/auth";
 import PostCard from "../components/PostCard.vue";
 
+const props = defineProps({
+  basePostsUrl: {
+    type: String,
+    required: true,
+  },
+});
+
+console.log(props.basePostsUrl);
+
 const posts = ref([]);
 const loading = ref(false);
 const loadingMore = ref(false);
@@ -56,7 +65,7 @@ const loadPosts = async () => {
   skip.value = 0;
   hasMore.value = true;
   try {
-    const feedPosts = await authStore.getFeedPosts(0, limit);
+    const feedPosts = await authStore.getFeedPosts(props.basePostsUrl, 0, limit);
     posts.value = feedPosts.map(transformPost);
     skip.value = feedPosts.length;
     if (feedPosts.length < limit) hasMore.value = false;
@@ -71,7 +80,7 @@ const loadMorePosts = async () => {
   if (loadingMore.value || !hasMore.value) return;
   loadingMore.value = true;
   try {
-    const feedPosts = await authStore.getFeedPosts(skip.value, limit);
+    const feedPosts = await authStore.getFeedPosts(props.basePostsUrl, skip.value, limit);
     if (feedPosts.length === 0) {
       hasMore.value = false;
       return;

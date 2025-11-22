@@ -96,7 +96,7 @@
       </n-space>
     </n-card>
 
-    <PostsContainer />
+    <PostsContainer ref="postsContainerRef" :basePostsUrl="`posts/wall/${username}`"  />
   </div>
 </template>
 
@@ -450,7 +450,7 @@ const handleFollowToggle = async () => {
 };
 
 onMounted(() => {
-  loadUserProfile();
+  loadUserProfile();  
 });
 
 watch(

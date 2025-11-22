@@ -114,9 +114,11 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  const getFeedPosts = async (skip = 0, limit = 10) => {
+  const getFeedPosts = async (baseUrl, skip = 0, limit = 10) => {
     try {
-      const response = await axios.get(`posts/feed?skip=${skip}&limit=${limit}`);
+      const response = await axios.get(
+        `${baseUrl}?skip=${skip}&limit=${limit}`
+      );
       return response.data;
     } catch (error) {
       console.error("Ошибка загрузки постов:", error);
