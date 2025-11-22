@@ -3,11 +3,25 @@
     <n-card title="Регистрация в SocialNet">
       <n-form>
         <n-form-item
-          label="Имя"
-          :feedback="formErrors.name"
-          :validation-status="formErrors.name ? 'error' : null"
+          label="Никнейм"
+          :feedback="formErrors.username"
+          :validation-status="formErrors.username ? 'error' : null"
         >
-          <n-input v-model:value="form.name" placeholder="Введите ваше имя" />
+          <n-input
+            v-model:value="form.username"
+            placeholder="Введите ваш никнейм"
+          />
+        </n-form-item>
+
+        <n-form-item
+          label="Имя Фамилия"
+          :feedback="formErrors.fullName"
+          :validation-status="formErrors.fullName ? 'error' : null"
+        >
+          <n-input
+            v-model:value="form.fullName"
+            placeholder="Введите ваше имя и фамилию"
+          />
         </n-form-item>
 
         <n-form-item
@@ -91,28 +105,38 @@ const router = useRouter();
 
 const loading = ref(false);
 const form = ref({
-  name: "",
+  username: "",
+  fullName: "",
   email: "",
   password: "",
   confirmPassword: "",
 });
 
 const formErrors = ref({
-  name: "",
+  username: "",
+  fullName: "",
   email: "",
   password: "",
   confirmPassword: "",
 });
 
 const validators = {
-  name: (value) => {
-    if (!value.trim()) return "Имя обязательно для заполнения";
+  username: (value) => {
+    if (!value.trim()) return "Никнейм обязателен для заполнения";
     if (value.trim().length < 3)
-      return "Имя должно содержать хотя бы 3 символа";
-    if (value.trim().length > 30)
-      return "Имя не должно быть длиннее 30 символов";
+      return "Никнейм должен содержать хотя бы 3 символа";
+    if (value.trim().length > 20)
+      return "Никнейм не должен быть длиннее 20 символов";
     if (!/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/.test(value))
-      return "Имя должно содержать только буквы, пробелы и дефисы";
+      return "Никнейм должен содержать только буквы, пробелы и дефисы";
+    return "";
+  },
+
+  fullName: (value) => {
+    if (!/^[a-zA-Zа-яА-ЯёЁ\s\-']+$/.test(value))
+      return "Имя и фамилия должны содержать только буквы, пробелы, дефисы и апострофы";
+    if (value.trim().length > 100)
+      return "Имя не должно быть длиннее 100 символов";
     return "";
   },
 
@@ -146,12 +170,24 @@ const validators = {
 
 const validateForm = () => {
   let isValid = true;
-  formErrors.value = { name: "", email: "", password: "", confirmPassword: "" };
+  formErrors.value = {
+    username: "",
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  };
 
   // Валидируем каждое поле
-  const nameError = validators.name(form.value.name);
+  const nameError = validators.username(form.value.username);
   if (nameError) {
-    formErrors.value.name = nameError;
+    formErrors.value.username = nameError;
+    isValid = false;
+  }
+
+  const fullNameError = validators.fullName(form.value.fullName);
+  if (fullNameError) {
+    formErrors.value.fullName = fullNameError;
     isValid = false;
   }
 
@@ -192,7 +228,7 @@ const handleRegister = async () => {
     authStore.updateUserData(
       {
         id: generateId(),
-        name: form.value.name,
+        name: form.value.username,
         email: form.value.email,
         avatar: `"https://avatars.mds.yandex.net/i?id=434f653e3450f644f16f7982c997a7dcac60a3ec-5561596-images-thumbs&n=13"`,
       },
