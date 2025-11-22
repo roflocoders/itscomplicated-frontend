@@ -312,7 +312,7 @@ const handleLogout = () => {
   }
 }
 
-@media (max-width: 580px) {
+@media (max-width: 650px) {
   .nav-button {
     display: none !important;
   }

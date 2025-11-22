@@ -119,21 +119,15 @@
       class="image-preview-modal"
       transform-origin="center"
     >
-      <n-card
-        style="width: 90vw; max-width: 800px; max-height: 90vh"
-        :bordered="false"
-        content-style="padding: 0; display: flex; justify-content: center; align-items: center;"
-      >
-        <img
-          :src="post.image"
-          style="
-            max-width: 100%;
-            max-height: 80vh;
-            border-radius: 12px;
-            object-fit: contain;
-          "
-        />
-      </n-card>
+      <img
+        :src="post.image"
+        style="
+          max-width: 100%;
+          max-height: 80vh;
+          border-radius: 16px;
+          object-fit: contain;
+        "
+      />
     </n-modal>
   </n-card>
 </template>
