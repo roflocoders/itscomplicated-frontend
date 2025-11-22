@@ -26,9 +26,9 @@
         </n-button>
         <n-button
           text
-          @click="$router.push('/profile')"
+          @click="$router.push(`/profile/${authStore.user?.username}`)"
           class="nav-button"
-          :class="{ active: $route.path === '/profile' }"
+          :class="{ active: $route.path.startsWith('/profile/') }"
         >
           <template #icon>
             <n-icon>
@@ -48,7 +48,9 @@
               :src="authStore.user?.avatar"
               class="user-avatar"
             />
-            <span class="user-name">{{ authStore.user?.full_name || authStore.user?.username }}</span>
+            <span class="user-name">{{
+              authStore.user?.full_name || authStore.user?.username
+            }}</span>
             <n-icon size="16" class="dropdown-arrow">
               <ChevronDownIcon />
             </n-icon>
@@ -91,7 +93,7 @@ const userMenuOptions = computed(() => [
 
 const handleUserMenuSelect = (key) => {
   if (key === "profile") {
-    router.push("/profile");
+    router.push(`/profile/${authStore.user?.username}`);
   } else if (key === "logout") {
     handleLogout();
   }

@@ -69,6 +69,17 @@ export const useAuthStore = defineStore("auth", () => {
     });
   };
 
+  const getUserByUsername = async (username) => {
+    try {
+      const response = await axios.get(`admin/users/${username}`);
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.error("Ошибка загрузки данных пользователя:", error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     user.value = null;
     token.value = null;
@@ -85,5 +96,6 @@ export const useAuthStore = defineStore("auth", () => {
     register,
     logout,
     fetchUserData,
+    getUserByUsername,
   };
 });
