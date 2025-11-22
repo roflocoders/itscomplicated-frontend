@@ -47,11 +47,15 @@
               <n-space>
                 <div class="stat">
                   <strong>{{ profileUser?.followers_count }}</strong>
-                  <span>подписчик(ов)</span>
+                  <span>{{
+                    formatFollowers(profileUser?.followers_count)
+                  }}</span>
                 </div>
                 <div class="stat">
                   <strong>{{ profileUser?.following_count }}</strong>
-                  <span>подписок</span>
+                  <span>{{
+                    formatFollowing(profileUser?.following_count)
+                  }}</span>
                 </div>
               </n-space>
             </div>
@@ -96,7 +100,10 @@
       </n-space>
     </n-card>
 
-    <PostsContainer ref="postsContainerRef" :basePostsUrl="`posts/wall/${username}`"  />
+    <PostsContainer
+      ref="postsContainerRef"
+      :basePostsUrl="`posts/wall/${username}`"
+    />
   </div>
 </template>
 
@@ -450,7 +457,7 @@ const handleFollowToggle = async () => {
 };
 
 onMounted(() => {
-  loadUserProfile();  
+  loadUserProfile();
 });
 
 watch(
@@ -459,4 +466,48 @@ watch(
     loadUserProfile();
   }
 );
+
+// Функция для склонения слова "подписчики"
+const formatFollowers = (count) => {
+  if (!count && count !== 0) return "подписчиков";
+
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return "подписчиков";
+  }
+
+  if (lastDigit === 1) {
+    return "подписчик";
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return "подписчика";
+  }
+
+  return "подписчиков";
+};
+
+// Функция для склонения слова "подписки"
+const formatFollowing = (count) => {
+  if (!count && count !== 0) return "подписок";
+
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return "подписок";
+  }
+
+  if (lastDigit === 1) {
+    return "подписка";
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return "подписки";
+  }
+
+  return "подписок";
+};
 </script>
