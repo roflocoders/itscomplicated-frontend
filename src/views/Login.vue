@@ -3,13 +3,13 @@
     <n-card title="Вход в SocialNet">
       <n-form>
         <n-form-item
-          label="Никнейм"
+          label="Никнейм или email"
           :feedback="formErrors.username"
           :validation-status="formErrors.username ? 'error' : null"
         >
           <n-input
             v-model:value="form.username"
-            placeholder="Введите никнейм"
+            placeholder="Введите никнейм или email"
           />
         </n-form-item>
         <n-form-item
@@ -106,7 +106,7 @@ const handleLogin = async () => {
     username: "",
     password: "",
   };
-  
+
   try {
     const params = new URLSearchParams();
     params.append("username", form.value.username);
@@ -120,16 +120,17 @@ const handleLogin = async () => {
     router.push("/");
   } catch (error) {
     console.error("Ошибка входа:", error);
-    
+
     // Обработка ошибки 401 (неверные данные для входа)
     if (axios.isAxiosError(error) && error.response?.status === 401) {
       formErrors.value.password = "Неверный никнейм или пароль";
       formErrors.value.username = "";
     } else {
       // Обработка других ошибок
-      const errorMessage = error?.response?.data?.detail || 
-                          error?.message || 
-                          "Произошла неизвестная ошибка. Попробуйте позже.";
+      const errorMessage =
+        error?.response?.data?.detail ||
+        error?.message ||
+        "Произошла неизвестная ошибка. Попробуйте позже.";
       formErrors.value.password = errorMessage;
     }
   } finally {
