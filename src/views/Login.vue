@@ -2,10 +2,21 @@
   <div class="login-container">
     <n-card title="Вход в SocialNet">
       <n-form>
-        <n-form-item label="Имя пользователя">
-          <n-input v-model:value="form.username" placeholder="Введите имя пользователя" />
+        <n-form-item
+          label="Никнейм"
+          :feedback="formErrors.username"
+          :validation-status="formErrors.username ? 'error' : null"
+        >
+          <n-input
+            v-model:value="form.username"
+            placeholder="Введите никнейм"
+          />
         </n-form-item>
-        <n-form-item label="Пароль">
+        <n-form-item
+          label="Пароль"
+          :feedback="formErrors.password"
+          :validation-status="formErrors.password ? 'error' : null"
+        >
           <n-input
             v-model:value="form.password"
             type="password"
@@ -45,8 +56,57 @@ const form = ref({
   password: "",
 });
 
+const formErrors = ref({
+  username: "",
+  password: "",
+});
+
+const validators = {
+  username: (value) => {
+    if (!value.trim()) return "Никнейм обязателен для заполнения";
+    return "";
+  },
+
+  password: (value) => {
+    if (!value) return "Пароль обязателен для заполнения";
+    return "";
+  },
+};
+
+const validateForm = () => {
+  let isValid = true;
+  formErrors.value = {
+    username: "",
+    password: "",
+  };
+
+  // Валидируем каждое поле
+  const nameError = validators.username(form.value.username);
+  if (nameError) {
+    formErrors.value.username = nameError;
+    isValid = false;
+  }
+
+  const passwordError = validators.password(form.value.password);
+  if (passwordError) {
+    formErrors.value.password = passwordError;
+    isValid = false;
+  }
+
+  return isValid;
+};
+
 const handleLogin = async () => {
+  if (!validateForm()) {
+    return;
+  }
   loading.value = true;
+  // Очищаем предыдущие ошибки
+  formErrors.value = {
+    username: "",
+    password: "",
+  };
+  
   try {
     const params = new URLSearchParams();
     params.append("username", form.value.username);
@@ -60,6 +120,18 @@ const handleLogin = async () => {
     router.push("/");
   } catch (error) {
     console.error("Ошибка входа:", error);
+    
+    // Обработка ошибки 401 (неверные данные для входа)
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      formErrors.value.password = "Неверный никнейм или пароль";
+      formErrors.value.username = "";
+    } else {
+      // Обработка других ошибок
+      const errorMessage = error?.response?.data?.detail || 
+                          error?.message || 
+                          "Произошла неизвестная ошибка. Попробуйте позже.";
+      formErrors.value.password = errorMessage;
+    }
   } finally {
     loading.value = false;
   }
