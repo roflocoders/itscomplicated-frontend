@@ -394,15 +394,14 @@ const loadUserProfile = async () => {
 
   loading.value = true;
   try {
+    // Загружаем профиль через API для получения полных данных (включая followers_count и following_count)
+    profileUser.value = await authStore.getUserProfile(username.value);
+    
     // Проверяем, является ли это профилем текущего пользователя
     if (authStore.user?.username === username.value) {
-      // Показываем текущего пользователя
-      profileUser.value = authStore.user;
       isFollowing.value = false; // Не показываем кнопку подписки для своего профиля
     } else {
-      // Загружаем данные другого пользователя
-      profileUser.value = await authStore.getUserProfile(username.value);
-      // Проверяем статус подписки
+      // Проверяем статус подписки для чужого профиля
       await loadFollowStatus();
     }
   } catch (error) {
